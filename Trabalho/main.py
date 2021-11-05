@@ -33,3 +33,9 @@ if __name__ == "__main__":
 
         g_matrix.out_graph()
         g_list.out_graph()
+
+        g_matrix.breadth_first_search("1")
+        g_list.breadth_first_search("1")
+
+        g_list.depth_first_search("1")
+        g_matrix.depth_first_search("1")
