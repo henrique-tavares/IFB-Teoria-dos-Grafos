@@ -9,6 +9,6 @@ Aluno(a): Cinthia Mie Nagahama Ungefehr e Henrique Tavares Aguiar
 
 1. A Biblioteca
     1. Lista de Adjacência
-    2. Matrix de Adjacência
+    2. Matriz de Adjacência
 2. Estudo de Caso 1
 3. Estudo de Caso 2
