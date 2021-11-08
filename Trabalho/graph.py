@@ -1,7 +1,9 @@
+from itertools import filterfalse
 from os import path
-from typing import Dict, List, Literal, NamedTuple, Optional, Set, Tuple
+from typing import Dict, FrozenSet, List, Literal, NamedTuple, Optional, Set, Tuple
 import numpy as np
 import math as m
+from functools import reduce
 
 
 class Edge(NamedTuple):
@@ -10,7 +12,6 @@ class Edge(NamedTuple):
 
 
 class Graph:
-    # math.floor(math.log(n)) + 1
     def __init__(self, graph_type: Literal["matrix", "list"], vertices_num: int) -> None:
         self.graph_type = graph_type
         self.vertices_num = vertices_num
@@ -44,7 +45,7 @@ class Graph:
         self._search_out_graph(vertices, "profundidade")
 
     def find_connected_components(self):
-        self.__instance.find_connected_components()
+        return self.__instance.find_connected_components()
 
     def _search_out_graph(self, vertices: Dict[str, Tuple[str, int]], search_type: Literal["largura", "profundidade"]):
         translate_search_type = {"largura": "breadth", "profundidade": "depth"}
@@ -138,13 +139,43 @@ class _GraphMatrix:
                     f"{vertex}: Nível = {level}" if parent == "" else f"{vertex}: Pai = {parent} | Nível = {level}"
                 )
 
-    def find_connected_components(self):
-        pass
+    def find_connected_components(self) -> List[Set[str]]:
+        connected_components: List[Set[str]] = list()
+        component: List[str] = list()
+
+        vertices_queue: List[str] = []
+
+        to_be_visited_vertices: Set[str] = set()
+        visited_vertices: Set[str] = set()
+
+        for vertex in self.vertices:
+            if vertex not in visited_vertices:
+                vertices_queue.append(vertex)
+                component = list()
+
+                while len(vertices_queue) != 0:
+                    current = vertices_queue.pop(0)
+
+                    component.append(current)
+
+                    to_be_visited_vertices.discard(current)
+                    visited_vertices.add(current)
+
+                    (indexes,) = np.nonzero(self.adj_matrix[self._get_vertex_index(current)])
+                    for idx in indexes:
+                        vertex = str(idx + 1)
+                        if vertex not in visited_vertices and vertex not in to_be_visited_vertices:
+                            vertices_queue.append(vertex)
+                            to_be_visited_vertices.add(vertex)
+
+                connected_components.append(set(component))
+
+        return connected_components
 
     def out_graph(self):
         with open(path.join(path.curdir, "graph_matrix_out.txt"), "w") as file:
             file.write(f"# n = {len(self.vertices)}\n")
-            file.write(f"# m = {int(np.count_nonzero(self.adj_matrix)/ 2)}\n")
+            file.write(f"# m = {int(np.count_nonzero(self.adj_matrix) / 2)}\n")
             for vertex, line in enumerate(self.adj_matrix):
                 file.write(f"{vertex + 1} {np.count_nonzero(line)}\n")
 
@@ -217,8 +248,33 @@ class _GraphList:
 
         return visited_vertices
 
-    def find_connected_components(self):
-        pass
+    def find_connected_components(self) -> List[Set[str]]:
+        components: Set[FrozenSet[str]] = set()
+        connected_components: List[Set[str]] = list()
+
+        for vertex in self.elements:
+            components.add(frozenset({vertex, *self[vertex]}))
+
+        while len(components) > 0:
+            acc_component = components.pop()
+
+            while True:
+                acc_component, merged = reduce(self._reduce_components, components, (acc_component, False))
+                components = set(filterfalse(lambda component: component.issubset(acc_component), components))
+                if not merged:
+                    break
+
+            connected_components.append(set(acc_component))
+
+        return connected_components
+
+    @staticmethod
+    def _reduce_components(acc: Tuple[Set[str], bool], component: Set[str]):
+        acc_component, merged = acc
+        if acc_component.isdisjoint(component):
+            return acc_component, merged
+        else:
+            return acc_component.union(component), True
 
     def __getitem__(self, key):
         return self.elements[key]
