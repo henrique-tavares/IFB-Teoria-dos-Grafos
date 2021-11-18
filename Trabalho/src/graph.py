@@ -1,9 +1,10 @@
 from itertools import filterfalse
 from os import path
-from typing import Dict, FrozenSet, List, Literal, NamedTuple, Optional, Set, Tuple
+from typing import Dict, FrozenSet, List, Literal, NamedTuple, Optional, Set, Tuple, Deque
 import numpy as np
 import math as m
 from functools import reduce
+from collections import deque
 
 
 class Edge(NamedTuple):
@@ -88,7 +89,7 @@ class _GraphMatrix:
             return None
 
         # [current, parent, level]
-        vertices_queue: List[Tuple[str, str, int]] = []
+        vertices_queue: Deque[Tuple[str, str, int]] = deque()
         # {current: (parent, level)}
         visited_vertices: Dict[str, Tuple[str, int]] = dict()
 
@@ -96,8 +97,8 @@ class _GraphMatrix:
 
         vertices_queue.append((origin, "", 0))
 
-        while len(vertices_queue) != 0:
-            (current, parent, level) = vertices_queue.pop(0)
+        while len(vertices_queue) > 0:
+            (current, parent, level) = vertices_queue.popleft()
             to_be_visited_vertices.discard(current)
 
             visited_vertices[current] = (parent, level)
@@ -116,7 +117,7 @@ class _GraphMatrix:
             return None
 
         # [current, parent, level]
-        vertices_stack: List[Tuple[str, str, int]] = []
+        vertices_stack: Deque[Tuple[str, str, int]] = deque()
         # {current: (parent, level)}
         visited_vertices: Dict[str, Tuple[str, int]] = dict()
         to_be_visited_vertices: Set[str] = set()
@@ -141,7 +142,7 @@ class _GraphMatrix:
         connected_components: List[Set[str]] = list()
         component: List[str] = list()
 
-        vertices_queue: List[str] = []
+        vertices_queue: Deque[str] = deque()
 
         to_be_visited_vertices: Set[str] = set()
         visited_vertices: Set[str] = set()
@@ -152,7 +153,7 @@ class _GraphMatrix:
                 component = list()
 
                 while len(vertices_queue) != 0:
-                    current = vertices_queue.pop(0)
+                    current = vertices_queue.popleft()
 
                     component.append(current)
 
@@ -207,7 +208,8 @@ class _GraphList:
             return None
 
         # [current, parent, level]
-        vertices_queue: List[Tuple[str, str, int]] = []
+        # vertices_queue: List[Tuple[str, str, int]] = []
+        vertices_queue: Deque[Tuple[str, str, int]] = deque()
         # {current: (parent, level)}
         visited_vertices: Dict[str, Tuple[str, int]] = dict()
 
@@ -216,7 +218,7 @@ class _GraphList:
         vertices_queue.append((origin, "", 0))
 
         while len(vertices_queue) != 0:
-            current, parent, level = vertices_queue.pop(0)
+            current, parent, level = vertices_queue.popleft()
             visited_vertices[current] = parent, level
             to_be_visited_vertices.discard(current)
 
@@ -232,7 +234,7 @@ class _GraphList:
             return None
 
         # [current, parent, level]
-        vertices_stack: List[Tuple[str, str, int]] = []
+        vertices_stack: Deque[Tuple[str, str, int]] = deque()
         # {current: (parent, level)}
         visited_vertices: Dict[str, Tuple[str, int]] = dict()
 
