@@ -34,13 +34,14 @@ class Graph:
     def out_graph(self, out_path: str) -> None:
         self.__instance.out_graph(out_path)
 
-    def breadth_first_search(self, origin: str, out_path: str):
+    def breadth_first_search(self, origin: str, out_path: Optional[str] = None):
         vertices = self.__instance.breadth_first_search(origin)
 
         if vertices is None:
             raise ValueError(f"O argumento origem: {origin} não pertence ao grafo!")
 
-        self._search_out_graph(vertices, "largura", out_path)
+        if out_path is not None:
+            self._search_out_graph(vertices, "largura", out_path)
 
     def depth_first_search(self, origin: str, out_path: str):
         vertices = self.__instance.depth_first_search(origin)
@@ -73,7 +74,7 @@ class Graph:
 class _GraphMatrix:
     def __init__(self, vertices_num: int) -> None:
         self.vertices = [str(v + 1) for v in range(vertices_num)]
-        self.adj_matrix = np.zeros((vertices_num, vertices_num), dtype=int)
+        self.adj_matrix = np.zeros((vertices_num, vertices_num), dtype="bool")
 
     def _get_vertex_index(self, vertex: str) -> int:
         return self.vertices.index(vertex)
