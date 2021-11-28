@@ -280,6 +280,9 @@ class _GraphList:
 
         return connected_components
 
+    def __getitem__(self, key):
+        return self.elements[key]
+
 
 if __name__ == "__main__":
     with open("teste.txt") as text_file:
