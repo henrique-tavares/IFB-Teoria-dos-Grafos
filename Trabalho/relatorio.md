@@ -108,78 +108,108 @@ Aluno(a): Cinthia Mie Nagahama Ungefehr e Henrique Tavares Aguiar
 
                 No fim, é retornada a *connected_components*.
 
-2. Estudo de Caso 1 - "collaboration_graph.txt"
+2. **Estudo de Caso 1 - "collaboration_graph.txt"**
 
-   1. Gasto de Memória
+    1. Gasto de Memória
 
-      - Grafo lista: 91300kb (~89Mb) (1.49s)
-      - Grafo matriz: 5025008kb (~4.8Gb) (23.47s)
+        Para comparar o gasto de memória de cada representação foi feito um código bastante simples consistindo de três passos:
+        1. Criar uma instância do grafo com a representação a ser testada
+        2. Inserir todas as arestas no grafo
+        3. Executar a função *out_graph*
 
-   2. Comparação - Busca em largura
+        Rodando esse código, tem-se como resultado os seguintes valores:
+        - Grafo lista: 
+            - Memória Utilizada: 91300kb (~89Mb)
+            - Tempo Gasto: 1.49s
+        - Grafo matriz: 
+            - Memória Utilizada: 5025008kb (~4.8Gb) 
+            - Tempo Gasto: 23.47s
 
-      - Grafo lista:
+    2. Análise dos Algoritmos e Comparação
 
-        - teste - bfs - médias:
-          - 13681: 2.26e-04s
-          - 21383: 9.71e-02s
-          - 352: 7.90e-05s
-          - 53446: 9.30e-02s
-          - 67379: 5.76e-05s
-        - insert_relation: O(1)
-        - bfs: O(V + E)
-        - dfs: O(V + E)
-        - fcc obsoleto: (V^2) - possíveis piores casos: (1 componente; V componentes)
-        - fcc otimizado:
-          - caso: V componentes -> O(V)
-          - caso: 1 componente (complexidade da bfs) -> O(V + E)
+        Para comparar a busca em largura é necessário analisar os algoritmos primeiro. Indo além, a seguir estão as Complexidades de Tempo de cada algoritmo no pior caso, considerando $V$ como o número de vértices e $E$ o número de arestas.
+        
+        1. Complexidades:
 
-      - Grafo matriz:
-        - teste - bfs - médias:
-          - 13681: 7.886e-04s
-          - 21383: 7.35e-01s
-          - 352: 2.41e-04s
-          - 53446: 5.99e-01s
-          - 67379: 1.62e-04s
-        - insert_relation: O(1)
-        - bfs: O(V^2)
-        - dfs: O(V^2)
-        - fcc:
-          - caso: V componentes -> O(V)
-          - caso: 1 componente (complexidade da bfs) -> O(V^2)
+            - GraphList:
 
-   3. Componentes conexos: 14384
+                - insert_relation: $O(1)$
+                - breadth_first_search: $O(V + E)$
+                - depth_first_search : $O(V + E)$
+                - find_connected_components: $O(V + E)$
 
-      - Grafo lista: 0.140s
-      - Grafo matriz: 8.663s
+            - Grafo matriz:
 
-      - Maior: 33533 vértices
-      - Menor: 1 vértice
+                - insert_relation: $O(1)$
+                - breadth_first_search: $O(V^2)$
+                - depth_first_search: $O(V^2)$
+                - find_connected_components: $O(V^2)$
+                    
+        2. Comparação - Busca em Largura (BFS)
+            
+            Para melhor comparar a busca em largura foi executada 10 vezes para 5 vértices aleatóriamente selecionados. A média dos tempos de execução podem ser vistos abaixo:
+            
+            1. _GraphList:
+                - 13681: $2.26*10^{-4}$s
+                - 21383: $9.71*10^{-2}$s
+                - 352: $7.90*10^{-5}$s
+                - 53446: $9.30*10^{-2}$s
+                - 67379: $5.76*10^{-5}$s
+            
+            2. _GraphMatrix:
+                - 13681: $7.886*10^{-4}$s
+                - 21383: $7.35*10^{-1}$s
+                - 352: $2.41*10^{-4}$s
+                - 53446: $5.99*10^{-1}$s
+                - 67379: $1.62*10^{-4}$s
 
-3. Estudo de Caso 2 - "as_graph.txt"
+            A partir dos resultados acima e das análises feitas no tópico anteirior, é bastante claro que a lista de adjacência é mais rápida que a matriz.            
 
-   1. Graus do Grafo
+        3. Componentes conexos
 
-      - Maior grau possível: 32384
-      - Maior grau no grafo: 2159
-      - Menor grau no grafo: 1
+            Executando a função *find_connected_components* para as duas representações obtém-se alguns dados:
+            1. O número de componentes conexos no *collaboration_graph* é de: 14384
+            2. O tempo necessário para encontrar o número de componentes conexos é:
+                - _GraphList: $0.140$s
+                - _MatrixGraph: $8.663$s
+            3. O maior componente possui 33533 vértices; e
+            4. O menor componente possui 1 vértice
+
+3. **Estudo de Caso 2 - "as_graph.txt"**
+
+    Tendo em vista os resultados do caso anterior e das análises, para esse estudo de caso foi utilizada apenas a representação por lista de adjacência.
+
+    1. Graus do Grafo
+
+        Executando a função *get_graph_degrees*, e calculando os valores, tem-se:
+        - o maior grau possível: 32384
+        - o maior grau no grafo: 2159
+        - o menor grau no grafo: 1
+
+        Gráfico dos graus dos vértices do grafo: 
 
         ![Imagem](https://cdn.discordapp.com/attachments/740548974343094332/914239959483969586/unknown.png)
 
-   2. Componentes Conexos do Grafo
+    2. Componentes Conexos do Grafo
 
-      - Número de componentes do grafo: 1
-      - Maior componente conexo possui 32385 vértices
-      - Menor componente conexo possui 32385 vértices
+        Executando a função *find_connected_components* para as duas representações obtém-se alguns dados:
+        
+        1. O número de componentes conexos no *as_graph* é de: 1
+        2. O maior componente possui 32385 vértices; e
+        3. O menor componente possui 32385 vértice
 
-        OBS: Eles são o mesmo componente
+            OBS: Eles são o mesmo componente
 
-   3. Busca em Largura
+    3. Busca em Largura
 
-      - O maior nível encontrado durante a BFS a partir de 1 foi 6
-      - O maior nível encontrado durante a BFS a partir de 728 foi 7
-      - O maior nível encontrado durante a BFS a partir de 16379 foi 8
-      - O maior nível encontrado durante a BFS a partir de 29382 foi 8
+        Executando a *breadth_first_search* para os vértices 1, 728, 16379 e 29382, obteve-se:
+        - O maior nível encontrado durante a BFS a partir de 1 foi 6
+        - O maior nível encontrado durante a BFS a partir de 728 foi 7
+        - O maior nível encontrado durante a BFS a partir de 16379 foi 8
+        - O maior nível encontrado durante a BFS a partir de 29382 foi 8
 
         Logo, a árvore de busca criada a partir de vértices diferentes tem profundidades diferentes.
 
-   4. Diâmetro da Internet é 11
+    4. Diâmetro da Internet
+
+        Para encontrar o diâmetro, a função *breadth_first_search* foi executada para cada vértice do grafo e de cada àrvore de busca gerada o maior nível foi extraído. Pegando o maior dos níveis separados, encontra-se que o diâmetro da internet é 11.
